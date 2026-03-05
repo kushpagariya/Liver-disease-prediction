@@ -2,11 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import joblib
 import pandas as pd
 
-app = Flask(__name__, template_folder='.')
-
-# Load model and encoder
-model = joblib.load('liver_disease_model.pkl')
-le = joblib.load('label_encoder.pkl')
+app = Flask(__name__)
 
 # Load model and encoder
 model = joblib.load('liver_disease_model.pkl')
