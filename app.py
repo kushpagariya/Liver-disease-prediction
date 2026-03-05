@@ -3,6 +3,7 @@ import joblib
 import pandas as pd
 
 app = Flask(__name__)
+app.template_folder = '.'
 
 # Load model and encoder
 model = joblib.load('liver_disease_model.pkl')
