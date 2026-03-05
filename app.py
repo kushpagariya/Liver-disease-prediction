@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 import joblib
 import pandas as pd
 import os
 
 app = Flask(__name__)
 app.template_folder = '.'
+CORS(app)
 
 # Load model and encoder
 model = joblib.load('liver_disease_model.pkl')
@@ -29,18 +31,49 @@ def predict_page():
 def about():
     return render_template('about.html')
 
+# Health check endpoint for deployment
+@app.route('/health')
+def health():
+    return jsonify({'status': 'healthy', 'service': 'LiverPredict AI'})
+
+# API info endpoint
+@app.route('/api')
+def api_info():
+    return jsonify({
+        'name': 'LiverPredict AI API',
+        'version': '1.0.0',
+        'endpoints': {
+            '/predict': 'POST - Make a prediction',
+            '/health': 'GET - Health check'
+        }
+    })
 
 # API for prediction
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
         data = request.get_json()
+        
+        # Validate required fields
+        required_fields = ['Age', 'Gender', 'Total_Bilirubin', 'Direct_Bilirubin', 
+                          'Alkaline_Phosphatase', 'Alamine_Aminotransferase', 
+                          'Aspartate_Aminotransferase', 'Total_Protiens', 
+                          'Albumin', 'Albumin_and_Globulin_Ratio']
+        
+        missing_fields = [field for field in required_fields if field not in data]
+        if missing_fields:
+            return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
 
+        # Create input DataFrame
         input_df = pd.DataFrame([data])
 
         # Encode gender
-        input_df['Gender'] = le.transform(input_df['Gender'])
+        if data['Gender'] in le.classes_:
+            input_df['Gender'] = le.transform([data['Gender']])[0]
+        else:
+            return jsonify({'error': 'Invalid gender value. Use Male or Female'}), 400
 
+        # Make prediction
         prediction = model.predict(input_df)[0]
         proba = model.predict_proba(input_df)[0]
 
@@ -54,8 +87,10 @@ def predict():
             'is_disease': int(prediction)
         })
 
+    except ValueError as e:
+        return jsonify({'error': f'Invalid input value: {str(e)}'}), 400
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': f'Prediction error: {str(e)}'}), 500
 
 
 if __name__ == "__main__":
