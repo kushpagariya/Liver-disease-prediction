@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import joblib
 import pandas as pd
+import os
 
 app = Flask(__name__)
 app.template_folder = '.'
@@ -9,7 +10,6 @@ app.template_folder = '.'
 model = joblib.load('liver_disease_model.pkl')
 le = joblib.load('label_encoder.pkl')
 
-# IMPORTANT: Update these based on your CSV columns
 FEATURE_COLUMNS = [
     'Age', 'Gender', 'Total_Bilirubin', 'Direct_Bilirubin', 
     'Alkaline_Phosphatase', 'Alamine_Aminotransferase', 
@@ -29,36 +29,35 @@ def predict_page():
 def about():
     return render_template('about.html')
 
+
+# API for prediction
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
         data = request.get_json()
-        
-        # Create DataFrame with correct column order
+
         input_df = pd.DataFrame([data])
-        
-        # Encode Gender
+
+        # Encode gender
         input_df['Gender'] = le.transform(input_df['Gender'])
-        
-        # Predict
+
         prediction = model.predict(input_df)[0]
         proba = model.predict_proba(input_df)[0]
-        
-        # Get probability for class 1 (Disease)
+
         disease_prob = proba[1] if len(proba) > 1 else proba[0]
-        
+
         result = "Liver Disease Detected" if prediction == 1 else "No Liver Disease"
-        
+
         return jsonify({
             'result': result,
             'probability': f"{disease_prob * 100:.2f}%",
             'is_disease': int(prediction)
         })
-    
+
     except Exception as e:
         return jsonify({'error': str(e)})
-import os
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port)
