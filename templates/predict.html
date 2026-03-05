@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Liver Disease | LiverPredict AI</title>
+    <meta name="description" content="Get accurate liver disease predictions using our advanced AI-powered clinical decision support system.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #38bdf8;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --gray: #64748b;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        /* Navigation */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand-custom {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .navbar-brand-custom i {
+            font-size: 1.75rem;
+        }
+
+        .nav-link-custom {
+            color: var(--dark-secondary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1.25rem !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .nav-link-custom:hover,
+        .nav-link-custom.active {
+            color: var(--white) !important;
+            background: var(--primary);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            padding: 60px 0 40px;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Form Card */
+        .form-card-professional {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+
+        .form-header-professional {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 2rem;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .form-header-professional h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header-professional p {
+            opacity: 0.9;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .form-body-professional {
+            padding: 2rem;
+        }
+
+        .form-label-professional {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-control-professional {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .form-control-professional:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+            outline: none;
+        }
+
+        .form-select-professional {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .form-select-professional:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+            outline: none;
+        }
+
+        .section-divider {
+            border-top: 1px solid #e2e8f0;
+            margin: 1.5rem 0;
+        }
+
+        .section-title-small {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .btn-submit-professional {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit-professional:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-submit-professional:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Result Box */
+        .result-box-professional {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-success-professional {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 2px solid #10b981;
+        }
+
+        .result-danger-professional {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #ef4444;
+        }
+
+        .result-title-professional {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-prob-professional {
+            font-weight: 600;
+            color: var(--dark-secondary);
+        }
+
+        /* Footer */
+        .footer-custom {
+            background: var(--dark);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 2rem 0;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            font-size: 0.875rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Spinner */
+        .spinner-custom {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar-custom">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="/" class="navbar-brand-custom">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                    <span>LiverPredict</span>
+                </a>
+                <div class="d-flex gap-2">
+                    <a href="/" class="nav-link-custom">Home</a>
+                    <a href="/predict_page" class="nav-link-custom active">Predict</a>
+                    <a href="/about" class="nav-link-custom">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="page-title">
+                        <i class="bi bi-clipboard2-pulse me-2"></i>Liver Disease Prediction
+                    </h1>
+                    <p class="page-subtitle">Enter your health parameters for accurate analysis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Form -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-card-professional">
+                    <div class="form-header-professional">
+                        <h3><i class="bi bi-clipboard2-data me-2"></i>Health Parameters</h3>
+                        <p>Please provide your liver function test results</p>
+                    </div>
+                    <div class="form-body-professional">
+                        <form id="predictionForm">
+                            <!-- Basic Info -->
+                            <div class="section-title-small">Basic Information</div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-person"></i> Age
+                                    </label>
+                                    <input type="number" class="form-control form-control-professional" name="Age" placeholder="Enter age" required min="1" max="120">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-gender-neuter"></i> Gender
+                                    </label>
+                                    <select class="form-select form-select-professional" name="Gender">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                         <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <!-- Bilirubin Tests -->
+                            <div class="section-title-small">Bilirubin Tests</div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-droplet"></i> Total Bilirubin
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Total_Bilirubin" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-droplet-fill"></i> Direct Bilirubin
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Direct_Bilirubin" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-thermometer-half"></i> Alkaline Phosphatase
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Alkaline_Phosphatase" required>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <!-- Enzyme Tests -->
+                            <div class="section-title-small">Liver Enzymes</div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-activity"></i> Alamine Aminotransferase (ALT)
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Alamine_Aminotransferase" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-heart-pulse"></i> Aspartate Aminotransferase (AST)
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Aspartate_Aminotransferase" required>
+                                </div>
+                            </div>
+
+                            <div class="section-divider"></div>
+
+                            <!-- Protein Tests -->
+                            <div class="section-title-small">Protein Levels</div>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-cup-straw"></i> Total Protiens
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Total_Protiens" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-egg"></i> Albumin
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Albumin" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label-professional">
+                                        <i class="bi bi-pie-chart"></i> Albumin & Globulin Ratio
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-professional" name="Albumin_and_Globulin_Ratio" required>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn-submit-professional" id="submitBtn">
+                                    <i class="bi bi-speedometer2"></i>
+                                    Analyze & Predict
+                                </button>
+                            </div>
+
+                            <div id="resultBox" class="result-box-professional">
+                                <div class="result-title-professional" id="resultText"></div>
+                                <div class="result-prob-professional" id="probText"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2024 LiverPredict AI. All rights reserved. | For educational purposes only.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Convert strings to numbers
+            for (let key in data) {
+                if(key !== 'Gender') {
+                    data[key] = parseFloat(data[key]);
+                }
+            }
+
+            // Show loading
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-custom"></span>Analyzing...';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                const resultBox = document.getElementById('resultBox');
+                const resultText = document.getElementById('resultText');
+                const probText = document.getElementById('probText');
+
+                resultBox.style.display = 'block';
+                
+                if(result.is_disease) {
+                    resultBox.className = 'result-box-professional result-danger-professional';
+                    resultText.innerHTML = '<i class="bi bi-exclamation-triangle-fill text-danger"></i> <span class="text-danger">' + result.result + '</span>';
+                } else {
+                    resultBox.className = 'result-box-professional result-success-professional';
+                    resultText.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i> <span class="text-success">' + result.result + '</span>';
+                }
+                probText.innerHTML = '<strong>Confidence:</strong> ' + result.probability;
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+            
+            // Reset button
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-speedometer2"></i>Analyze & Predict';
+        });
+    </script>
+
+</body>
+</html>
